@@ -40,7 +40,7 @@ jobs:
 
     - name: Install dependences for ustore
       run:  |
-            conan install . \
+            conan install .. \
             --build=missing \
             --install-folder="cmake" \
             -s compiler.libcxx=libstdc++11
