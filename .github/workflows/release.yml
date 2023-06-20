@@ -40,6 +40,8 @@ jobs:
     
     - name: Show files
       run:  ls
+    
+    - uses: actions/checkout@v3
 
     - name: Install dependences for ustore
       run:  |
