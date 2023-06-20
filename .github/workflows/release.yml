@@ -53,19 +53,22 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
     
-    - name: Build ustore
+    - uses: actions/checkout@v3
+    - name: Build and Make
       run: |
-          cmake -DCMAKE_BUILD_TYPE=Release -DUSTORE_BUILD_TESTS=0 \
-          -DUSTORE_BUILD_BENCHMARKS=0 \
-          -DUSTORE_BUILD_ENGINE_UCSET=1 \
-          -DUSTORE_BUILD_ENGINE_LEVELDB=1 \
-          -DUSTORE_BUILD_ENGINE_ROCKSDB=1 \ 
-          -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
-          -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
-          -B ./build_release && 
-          make -j32 \
-            ustore_flight_server_ucset \
-            ustore_flight_server_leveldb \
-            ustore_flight_server_rocksdb \
-            --silent \
-            -C ./build_release
+        cmake -DCMAKE_BUILD_TYPE=Release \
+              -DUSTORE_BUILD_TESTS=0 \
+              -DUSTORE_BUILD_BENCHMARKS=0 \
+              -DUSTORE_BUILD_ENGINE_UCSET=1 \
+              -DUSTORE_BUILD_ENGINE_LEVELDB=1 \
+              -DUSTORE_BUILD_ENGINE_ROCKSDB=1 \
+              -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
+              -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
+              -B ./build_release
+        
+        make -j32 \
+             ustore_flight_server_ucset \
+             ustore_flight_server_leveldb \
+             ustore_flight_server_rocksdb \
+             --silent \
+             -C ./build_release
