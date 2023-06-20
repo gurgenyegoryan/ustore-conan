@@ -3,70 +3,54 @@ name: Release
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["main-dev"]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
-  id-token: write
-
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
-
-env:
-  GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+  id-token: writ
 
 
 jobs:
 
-  versioning:
-    name: Semantic Release
+  build:
+
+    name: Build ustore
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Install dependences
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y apt-utils 2>&1 | grep -v "debconf: delaying package configuration, since apt-utils is not installed"
+        sudo apt-get install -y --no-install-recommends cmake git libssl-dev build-essential zlib1g zlib1g-dev python3 python3-dev
+    
+    - name: Install Conan
+      id: conan
+      uses: turtlebrowser/get-conan@main
       with:
-        persist-credentials: false
-    - uses: actions/setup-node@v3
-    - run: cp .github/workflows/package.json . && npm install && npx semantic-release
+        version: 1.57.0
 
-
-  # Single deploy job since we're just deploying
-  deploy:
-    name: Deploy Docs
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-22.04
-    needs: versioning
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: 'main'   
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v2
-      - name: Install dependencies
-        run: sudo apt update && sudo apt install -y doxygen graphviz dia git && pip install sphinx breathe furo m2r2 sphinxcontrib-googleanalytics==0.2.dev20220708 sphinxcontrib-jquery
-      - name: Install UStore from PyPi
-        run: pip install ustore
-      - name: Fetch GoLang repo
-        run: git submodule update --init --recursive --remote go-ustore/
-      - name: Build documentation
-        run: cd docs && doxygen conf.dox && make html
-      - name: Copy assets
-        run: cp -r assets build/docs/html/
-      - name: Upload artifacts
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload entire repository
-          path: "./build/docs/html/"
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+    - name: Install dependences for ustore
+      run: |
+        conan profile new --detect default
+        conan profile update settings.compiler.libcxx=libstdc++11 default
+        conan install . --build=missing --install-folder="cmake" -s compiler.libcxx=libstdc++11
+    
+    - name: Build ustore
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DUSTORE_BUILD_TESTS=0 \
+        -DUSTORE_BUILD_BENCHMARKS=0 \
+        -DUSTORE_BUILD_ENGINE_UCSET=1 \
+        -DUSTORE_BUILD_ENGINE_LEVELDB=1 \
+        -DUSTORE_BUILD_ENGINE_ROCKSDB=1 \ 
+        -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
+        -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
+        -B ./build_release && 
+        make -j32 \
+          ustore_flight_server_ucset \
+          ustore_flight_server_leveldb \
+          ustore_flight_server_rocksdb \
+          --silent \
+          -C ./build_release
