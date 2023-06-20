@@ -37,6 +37,9 @@ jobs:
 
     - name: Conan profile update
       run:  conan profile update settings.compiler.libcxx=libstdc++11 default
+    
+    - name: Show files
+      run:  ls
 
     - name: Install dependences for ustore
       run:  |
