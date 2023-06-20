@@ -32,26 +32,32 @@ jobs:
       with:
         version: 1.57.0
 
+    - name: Create default Conan profile
+      run: conan profile new default --detect
+
+    - name: Conan profile update
+      run:  conan profile update settings.compiler.libcxx=libstdc++11 default
+
     - name: Install dependences for ustore
-      run: |
-        conan profile new --detect default || true
-        conan profile update settings.compiler.libcxx=libstdc++11 default || true
-        ls -lh
-        conan install . --build=missing --install-folder="cmake" -s compiler.libcxx=libstdc++11
+      run:  |
+            conan install . \
+            --build=missing \
+            --install-folder="cmake" \
+            -s compiler.libcxx=libstdc++11
     
     - name: Build ustore
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DUSTORE_BUILD_TESTS=0 \
-        -DUSTORE_BUILD_BENCHMARKS=0 \
-        -DUSTORE_BUILD_ENGINE_UCSET=1 \
-        -DUSTORE_BUILD_ENGINE_LEVELDB=1 \
-        -DUSTORE_BUILD_ENGINE_ROCKSDB=1 \ 
-        -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
-        -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
-        -B ./build_release && 
-        make -j32 \
-          ustore_flight_server_ucset \
-          ustore_flight_server_leveldb \
-          ustore_flight_server_rocksdb \
-          --silent \
-          -C ./build_release
+          cmake -DCMAKE_BUILD_TYPE=Release -DUSTORE_BUILD_TESTS=0 \
+          -DUSTORE_BUILD_BENCHMARKS=0 \
+          -DUSTORE_BUILD_ENGINE_UCSET=1 \
+          -DUSTORE_BUILD_ENGINE_LEVELDB=1 \
+          -DUSTORE_BUILD_ENGINE_ROCKSDB=1 \ 
+          -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
+          -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
+          -B ./build_release && 
+          make -j32 \
+            ustore_flight_server_ucset \
+            ustore_flight_server_leveldb \
+            ustore_flight_server_rocksdb \
+            --silent \
+            -C ./build_release
