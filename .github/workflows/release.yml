@@ -43,7 +43,7 @@ jobs:
 
     - name: Install dependences for ustore
       run:  |
-            conan install .. \
+            conan install /home/runner/work/conan-ustore-ci/conan-ustore-ci/conanfile.py \
             --build=missing \
             --install-folder="cmake" \
             -s compiler.libcxx=libstdc++11
