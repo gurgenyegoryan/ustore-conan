@@ -35,7 +35,7 @@ jobs:
     - name: Install dependences for ustore
       run: |
         conan profile new --detect default || true
-        conan profile update settings.compiler.libcxx=libstdc++11 default
+        conan profile update settings.compiler.libcxx=libstdc++11 default || true
         ls -lh
         conan install . --build=missing --install-folder="cmake" -s compiler.libcxx=libstdc++11
     
