@@ -43,10 +43,10 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.0
       with:
-        version: 2.0.7
+        version: 1.57.0
       
     - name: Create default profile
-      run: conan profile detect
+      run: conan profile new --detect default
       
     - name: Update profile
       run: conan profile update settings.compiler.libcxx=libstdc++11 default
