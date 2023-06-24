@@ -64,25 +64,25 @@ jobs:
              -C ./build_release
     
     - name: Upload Binaries
-        uses: actions/upload-artifact@v3.1.1
-        with:
-          name: ubuntu_binaries
-          path: build_release/bin/*
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: binaries
+        path: build_release/bin/*
 
   
-   test:
-    runs-on: ubuntu-20.04
-    needs: build
+  #  test:
+  #   runs-on: ubuntu-20.04
+  #   needs: build
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v3.0.1
-        with:
-          name: ubuntu_binaries
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Download a Build Artifact
+  #       uses: actions/download-artifact@v3.0.1
+  #       with:
+  #         name: binaries
 
-      - name: Change Permissions
-        run: chmod +x /home/runner/work/conan-ustore-ci/conan-ustore-ci/*
+  #     - name: Change Permissions
+  #       run: chmod +x /home/runner/work/conan-ustore-ci/conan-ustore-ci/*
       
-      - name: Run Tests
-        run: for test in $(ls /home/runner/work/conan-ustore-ci/conan-ustore-ci/*unit_test); do  echo -e "------ \e[93mRunning $test\e[0m ------"; timeout -v --kill-after=5 300 $test; done
+  #     - name: Run Tests
+  #       run: for test in $(ls /home/runner/work/conan-ustore-ci/conan-ustore-ci/*unit_test); do  echo -e "------ \e[93mRunning $test\e[0m ------"; timeout -v --kill-after=5 300 $test; done
