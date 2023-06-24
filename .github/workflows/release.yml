@@ -32,15 +32,17 @@ jobs:
     #   with:
     #     version: 1.57.0
 
-    - name: Install conan
-      run: pip3 install conan==2.0.7
+    
     
     - uses: actions/checkout@v3
 
+    - name: Install conan
+      run: pip3 install conan==2.0.7
+
     - name: Create default Conan profile
       run: |
-        conan profile new --detect default || true
-        conan profile update settings.compiler.libcxx=libstdc++11 default || true
+        conan profile new --detect default
+        conan profile update settings.compiler.libcxx=libstdc++11 default
         conan install . --build=missing --install-folder="cmake" -s compiler.libcxx=libstdc++11
       
     - name: Build and Make
