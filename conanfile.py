@@ -37,12 +37,12 @@ class ConanUStore(ConanFile):
         'build_type': ['Release'],
         'arch': ['x86', 'x86_64', 'armv8', 'armv8_32', 'armv8.3'],
     }
-    generators = 'CMakeToolchain', 'cmake_find_package', 'cmake'
+    generators = 'cmake_find_package_multi'
     options = {'with_arrow': [True, False]}
     
     default_options = {
         'with_arrow': False,
-        'openssl:shared': False,
+        'openssl/*:shared': True,
         'arrow:shared': True,
         'arrow:parquet': True,
         'arrow:dataset_modules': True,
@@ -201,7 +201,7 @@ class ConanUStore(ConanFile):
         # https://conan.io/center/openssl
         self.requires('openssl/1.1.1s')
         self.requires('protobuf/3.21.4')
-        
+        self.requires('grpc/1.50.0')
 
     def system_requirements(self):
         # If we need a fresher version of Arrow, we can get it from the default package manager.
