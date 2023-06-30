@@ -42,7 +42,12 @@ jobs:
       run: conan profile update settings.compiler.libcxx=libstdc++11 default
       
     - name: Install dependencies
-      run: conan install . --build=missing --install-folder=${{github.workspace}}/cmake -s compiler.libcxx=libstdc++11
+      env:
+        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      run: |
+        conan remote add artifactory http://54.163.51.0:8081/artifactory/api/conan/conan-local
+        conan install ustore/1.0.0@demo/stable -r artifactory -g cmake
             
     - name: Build and Make
       run: |
