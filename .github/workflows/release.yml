@@ -34,7 +34,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Get Conan
-      run: pip3 install conan==1.57.0
+      run: pip install conan==1.57.0
       
     - name: Create default profile
       run: conan profile new --detect default
