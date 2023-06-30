@@ -48,7 +48,7 @@ jobs:
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       run: |
         conan remote add artifactory http://54.163.51.0:8081/artifactory/api/conan/conan-local
-        conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p $ARTIFACTORY_PASSWORD
+        conan user admin -r $ARTIFACTORY_NAME -p Yeg.1995
         conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
             
     - name: Build and Make
