@@ -182,7 +182,7 @@ endif()
 
 set(CONAN ON)
 if (${CONAN})
-  include(${CMAKE_SOURCE_DIR}/cmake/conanbuildinfo.cmake)
+  include(${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
 endif()
 
