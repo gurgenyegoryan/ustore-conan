@@ -1,19 +1,10 @@
 name: Release
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main-dev"]
 
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   ARTIFACTORY_NAME: artifactory
   ARTIFACTORY_USERNAME: admin
@@ -22,9 +13,7 @@ env:
 
 
 jobs:
-
   build:
-
     name: Build ustore
     runs-on: ubuntu-latest
     steps:
@@ -50,26 +39,23 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set default.region $AWS_DEFAULT_REGION
     
-    - name: Run artifactory instance
+    - name: Start artifactory instance
       id: ip
       run: |
         aws ec2 start-instances --instance-ids $INSTANCE_ID
-        sleep 30
-        echo "public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)" >> $GITHUB_OUTPUT
         sleep 60
+        echo "public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)" >> $GITHUB_OUTPUT
         
-    - name: Get Conan
+    - name: Install Conan
       run: pip install conan==1.57.0
       
-    - name: Create default profile
+    - name: Create conan default profile
       run: conan profile new --detect default
       
-    - name: Update profile
+    - name: Update conan profile
       run: conan profile update settings.compiler.libcxx=libstdc++11 default
       
-    - name: Install dependencies
-      env:
-        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+    - name: Install ustore dependencies using conan
       run: |
         conan remote add $ARTIFACTORY_NAME http://${{ steps.ip.outputs.public_ip }}:8081/artifactory/api/conan/conan-local
         conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p ${{ secrets.ARTIFACTORY_PASSWORD }}
@@ -89,6 +75,7 @@ jobs:
               -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
               -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
               -B ./build_release
+              
     - name: Build   
       run: |
         make -j4 \
@@ -103,21 +90,3 @@ jobs:
       with:
         name: binaries
         path: build_release/bin/*
-
-  
-  #  test:
-  #   runs-on: ubuntu-20.04
-  #   needs: build
-
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Download a Build Artifact
-  #       uses: actions/download-artifact@v3.0.1
-  #       with:
-  #         name: binaries
-
-  #     - name: Change Permissions
-  #       run: chmod +x /home/runner/work/conan-ustore-ci/conan-ustore-ci/*
-      
-  #     - name: Run Tests
-  #       run: for test in $(ls /home/runner/work/conan-ustore-ci/conan-ustore-ci/*unit_test); do  echo -e "------ \e[93mRunning $test\e[0m ------"; timeout -v --kill-after=5 300 $test; done
