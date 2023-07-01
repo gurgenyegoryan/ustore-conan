@@ -53,8 +53,7 @@ jobs:
       id: ip
       run: |
         aws ec2 start-instances --instance-ids $INSTANCE_ID
-        public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
-        echo "$public_ip" >> $GITHUB_OUTPUT
+        echo "public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)" >> $GITHUB_OUTPUT
         sleep 60
         
     - name: Get Conan
