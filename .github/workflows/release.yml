@@ -47,11 +47,11 @@ jobs:
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       run: |
-        conan remote add artifactory http://54.163.51.0:8081/artifactory/api/conan/conan-local
+        conan remote add artifactory http://3.94.79.220:8081/artifactory/api/conan/conan-local
         conan user admin -r $ARTIFACTORY_NAME -p Yeg.1995
         conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
             
-    - name: Build and Make
+    - name: Configure cmake
       run: |
         cmake -DCMAKE_BUILD_TYPE=Release \
               -DUSTORE_BUILD_TESTS=0 \
@@ -62,7 +62,8 @@ jobs:
               -DUSTORE_BUILD_API_FLIGHT_CLIENT=0 \
               -DUSTORE_BUILD_API_FLIGHT_SERVER=1 . \
               -B ./build_release
-        
+    - name: Build   
+      run: |
         make -j32 \
              ustore_flight_server_ucset \
              ustore_flight_server_leveldb \
