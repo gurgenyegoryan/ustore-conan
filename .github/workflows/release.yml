@@ -24,6 +24,9 @@ jobs:
         sudo apt-get install -y --no-install-recommends git cmake libssl-dev build-essential zlib1g zlib1g-dev python3 python3-dev python3-pip 
     
     - uses: actions/checkout@v3
+      with:
+          ref: 'main'
+    - run: git submodule update --init --recursive
     
     - name: Install AWS CLI v2
       run:  |
@@ -40,7 +43,7 @@ jobs:
         aws configure set default.region $AWS_DEFAULT_REGION
     
     - name: Start artifactory instance
-      id: ip
+      id: get_ip
       run: |
         aws ec2 start-instances --instance-ids $INSTANCE_ID
         sleep 60
@@ -57,7 +60,7 @@ jobs:
       
     - name: Install ustore dependencies using conan
       run: |
-        conan remote add $ARTIFACTORY_NAME http://${{ steps.ip.outputs.public_ip }}:8081/artifactory/api/conan/conan-local
+        conan remote add $ARTIFACTORY_NAME http://${{ steps.get_ip.outputs.public_ip }}:8081/artifactory/api/conan/conan-local
         conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p ${{ secrets.ARTIFACTORY_PASSWORD }}
         conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
         
@@ -66,7 +69,7 @@ jobs:
             
     - name: Configure cmake
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release \
+        cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
               -DUSTORE_BUILD_TESTS=0 \
               -DUSTORE_BUILD_BENCHMARKS=0 \
               -DUSTORE_BUILD_ENGINE_UCSET=1 \
@@ -84,9 +87,3 @@ jobs:
              ustore_flight_server_rocksdb \
              --silent \
              -C ./build_release
-    
-    - name: Upload Binaries
-      uses: actions/upload-artifact@v3.1.1
-      with:
-        name: binaries
-        path: build_release/bin/*
