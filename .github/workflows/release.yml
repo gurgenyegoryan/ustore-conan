@@ -55,7 +55,7 @@ jobs:
       run: |
         aws ec2 start-instances --instance-ids $INSTANCE_ID
         echo "public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)" >> $GITHUB_OUTPUT
-        sleep 60
+        sleep 120
         
     - name: Get Conan
       run: pip install conan==1.57.0
