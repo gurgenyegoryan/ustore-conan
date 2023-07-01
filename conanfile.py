@@ -48,8 +48,7 @@ class ConanUStore(ConanFile):
         
         
     def generate(self):
-        tc = CMakeToolchain(self)
-        
+        tc = CMakeToolchain(self)      
         if cross_building(self):
             cmake_system_processor = {
                 "armv8": "aarch64",
@@ -125,8 +124,6 @@ class ConanUStore(ConanFile):
         
         
     def requirements(self):
-        # Most of our dependencies come from `CMake`
-        # https://docs.conan.io/en/latest/reference/conanfile/methods.html#requirements
         self.requires('arrow/10.0.0')
         self.requires('openssl/1.1.1t')
         self.requires('pcre2/10.42')
