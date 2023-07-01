@@ -69,7 +69,7 @@ jobs:
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       run: |
-        PUBLIC_IP=${{ steps.ip.public_ip }}
+        echo "PUBLIC_IP=${{ steps.ip.public_ip }}"
         conan remote add $ARTIFACTORY_NAME http://${{ $PUBLIC_IP }}/artifactory/api/conan/conan-local
         conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p $ARTIFACTORY_PASSWORD
         conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
