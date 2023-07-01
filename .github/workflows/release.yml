@@ -16,6 +16,7 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   ARTIFACTORY_NAME: artifactory
+  ARTIFACTORY_USERNAME: admin
   INSTANCE_ID: i-08c772cfd944ae53b
   AWS_DEFAULT_REGION: us-east-1
 
@@ -67,11 +68,10 @@ jobs:
       
     - name: Install dependencies
       env:
-        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       run: |
-        conan remote add $ARTIFACTORY_NAME http://${{ steps.ip.outputs.public_ip }}/artifactory/api/conan/conan-local
-        conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p $ARTIFACTORY_PASSWORD
+        conan remote add $ARTIFACTORY_NAME http://${{ steps.ip.outputs.public_ip }}:8081/artifactory/api/conan/conan-local
+        conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p ${{ secrets.ARTIFACTORY_PASSWORD }}
         conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
         
     - name: Stop artifactory instance
