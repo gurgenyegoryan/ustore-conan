@@ -47,7 +47,7 @@ jobs:
       id: get_ip
       run: |
         aws ec2 start-instances --instance-ids $INSTANCE_ID
-        sleep 60
+        sleep 60 # wait until instance start
         echo "public_ip=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)" >> $GITHUB_OUTPUT
         
     - name: Install Conan
