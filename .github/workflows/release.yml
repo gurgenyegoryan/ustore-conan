@@ -8,8 +8,9 @@ env:
   BUILD_TYPE: Release
   ARTIFACTORY_NAME: artifactory
   ARTIFACTORY_USERNAME: admin
-  INSTANCE_ID: i-08c772cfd944ae53b
+  INSTANCE_ID: i-0b2b466181df593a7
   AWS_DEFAULT_REGION: us-east-1
+  USTORE_CONAN_PACKAGE: ustore/0.12.2@demo/stable
 
 
 jobs:
@@ -62,7 +63,7 @@ jobs:
       run: |
         conan remote add $ARTIFACTORY_NAME http://${{ steps.get_ip.outputs.public_ip }}:8081/artifactory/api/conan/conan-local
         conan user $ARTIFACTORY_USERNAME -r $ARTIFACTORY_NAME -p ${{ secrets.ARTIFACTORY_PASSWORD }}
-        conan install ustore/1.0.0@demo/stable -r $ARTIFACTORY_NAME -g cmake
+        conan install $USTORE_CONAN_PACKAGE -r $ARTIFACTORY_NAME -g cmake
         
     - name: Stop artifactory instance
       run: aws ec2 stop-instances --instance-ids $INSTANCE_ID 
