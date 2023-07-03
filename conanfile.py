@@ -151,7 +151,10 @@ class ConanUStore(ConanFile):
     
     
     def package_info(self):
-        pass
+        if self.options["arrow"].with_flight_rpc:
+            self.cpp_info.components["libarrow_flight"].set_property("pkg_config_name", "flight_rpc")
+            self.cpp_info.components["libarrow_flight"].libs = [f"arrow_flight{suffix}"]
+            self.cpp_info.components["libarrow_flight"].requires = ["libarrow"]
     
     
     def package(self):
