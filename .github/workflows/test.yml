@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    branches: ["main-dev"]
+
+env:
+  BUILD_TYPE: Release
+  GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+  PYTHONUTF8: 1
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+
+  build_wheels:
+    name: Build Wheels for
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ls -la']
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'main'      
+      - name: Test
+        run: os.matrix
