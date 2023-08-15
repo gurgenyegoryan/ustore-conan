@@ -28,6 +28,6 @@ jobs:
 
       - name: Get previous release tag
         id: previoustag
-        run: |
-          previous_tag=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
-          echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
+        run: git tag
+          # previous_tag=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
+          # echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
