@@ -16,17 +16,18 @@ permissions:
   id-token: write
 
 jobs:
-
-  build_wheels:
-    name: Build Wheels for
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ['ls -la']
-
+  build_conan_packages_arm64:
+    name: Build conan package for linux arm64
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          ref: 'main'      
-      - name: Test
-        run: os.matrix
+          persist-credentials: false
+          ref: 'main-dev'
+
+      - name: Get previous release tag
+        id: previoustag
+        run: |
+          previous_tag=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
+          echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
